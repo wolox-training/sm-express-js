@@ -1,0 +1,18 @@
+@import "_styles";
+
+$title-decoration-height: 90px;
+
+$title-padding-left: 51px;
+
+.title-box {
+  align-items: center;
+  background: url(assets/triangle.svg) left center no-repeat;
+  display: flex;
+  height: $title-decoration-height;
+  padding-left: $title-padding-left;
+
+  .title {
+    font-family: $default-font;
+    font-size: $text-big;
+  }
+}
