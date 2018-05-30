@@ -1,0 +1,13 @@
+{
+  "name": "training-maquetado",
+  "description": "A training project",
+  "version": "0.0.1",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-sass": "^4.0.1"
+  },
+  "scripts": {
+    "sass": "gulp sass",
+    "sass-watch": "gulp sass:watch"
+  }
+}
