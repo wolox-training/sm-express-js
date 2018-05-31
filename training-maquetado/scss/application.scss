@@ -1,6 +1,19 @@
 @import '_equalizer';
+@import '_colors';
+@import '_styles';
+@import '_texts';
 @import '_titles';
+@import '_tech';
 
 * {
   font-family: 'Roboto', sans-serif;
+  font-size: $text-small;
+}
+
+.container {
+  @extend %container-props;
+
+  .title {
+    margin-top: 50px;
+  }
 }
