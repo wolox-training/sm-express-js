@@ -51,6 +51,12 @@ $tech-card-border-radius: 5px;
     top: -10px;
     width: $tech-card-width;
     z-index: -1;
+    transition: top 0.5s ease, left 0.5s ease;
+  }
+
+  &:hover:before {
+    left: 5px;
+    top: 5px;
   }
 }
 
