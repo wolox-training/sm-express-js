@@ -27,5 +27,5 @@ Or if you plan to develop, you can use
 $ npm run sass-watch
 ``` 
 
-And  it will compile with any change in the CSS
+And it will compile with any change in the CSS
 

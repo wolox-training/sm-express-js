@@ -3,6 +3,10 @@
   font-size: $text-small;
 }
 
+.main-container {
+  padding-top: $navbar-height;
+}
+
 .section-container {
   width: 90%;
   margin: 50px auto;
