@@ -1,4 +1,13 @@
-%container-props {
+* {
+  font-family: 'Roboto', sans-serif;
+  font-size: $text-small;
+}
+
+.container {
   width: 90%;
-  margin: auto;
+  margin: 0 auto 100px;
+
+  .title {
+    margin-top: 50px;
+  }
 }
