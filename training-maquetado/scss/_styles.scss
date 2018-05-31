@@ -4,7 +4,9 @@
 }
 
 .main-container {
-  padding-top: $navbar-height;
+  padding: $navbar-height 0 $footer-height;
+  min-height: 100vh;
+  position: relative;
 }
 
 .section-container {
