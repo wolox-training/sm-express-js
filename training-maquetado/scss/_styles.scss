@@ -1,4 +1,9 @@
-%container-props {
+* {
+  font-family: 'Roboto', sans-serif;
+  font-size: $text-small;
+}
+
+.section-container {
   width: 90%;
-  margin: auto;
+  margin: 50px auto;
 }

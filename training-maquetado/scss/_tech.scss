@@ -1,25 +1,32 @@
-$tech-card-height: 300px;
+$tech-card-height: 325px;
 
 $tech-card-width: 200px;
 
 $tech-card-border-radius: 5px;
 
 .tech-container {
-  @extend %container-props;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 960px;
+  width: 90%;
+  margin-left: 5%;
 
   .tech-card {
-    margin-top: 30px;
+    margin: 30px 20px 0;
   }
 }
 
-.tech-card {
+.tech-header {
   align-items: center;
-  background-color: $earls-green;
-  border-radius: $tech-card-border-radius;
   display: flex;
   flex-direction: column;
+}
+
+.tech-card {
+  background-color: $earls-green;
+  border-radius: $tech-card-border-radius;
   height: $tech-card-height;
-  padding: 20px 20px 0 5px;
+  padding: 20px 20px 0 10px;
   position: relative;
   text-align: center;
   width: $tech-card-width;
@@ -52,4 +59,5 @@ $tech-card-border-radius: 5px;
 
 .tech-logo {
   height: 100px;
+  width: 100px;
 }
