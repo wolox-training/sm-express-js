@@ -16,12 +16,15 @@ $tech-card-border-radius: 5px;
   }
 }
 
-.tech-card {
+.tech-header {
   align-items: center;
-  background-color: $earls-green;
-  border-radius: $tech-card-border-radius;
   display: flex;
   flex-direction: column;
+}
+
+.tech-card {
+  background-color: $earls-green;
+  border-radius: $tech-card-border-radius;
   height: $tech-card-height;
   padding: 20px 20px 0 10px;
   position: relative;
