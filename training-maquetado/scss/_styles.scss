@@ -1,5 +1,4 @@
-$text-big: 24px;
-
-$text-medium: 16px;
-
-$text-small: 12px;
+%container-props {
+  width: 90%;
+  margin: auto;
+}
