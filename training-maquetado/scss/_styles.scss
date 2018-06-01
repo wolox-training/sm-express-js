@@ -4,12 +4,33 @@
 }
 
 .main-container {
-  padding: $navbar-height 0 $footer-height;
   min-height: 100vh;
+  padding: $navbar-height 0 $footer-height;
   position: relative;
 }
 
-.section-container {
-  width: 90%;
-  margin: 50px auto;
+.section-grid {
+  display: grid;
+  margin: 50px 110px;
+  max-width: 960px;
+  width: 100%;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: repeat(3, auto);
+  grid-template-areas: "title title title title"
+                        ". side-tech techs techs"
+                        ". side-tech techs techs";
+
+  .title {
+    grid-area: title;
+    margin-bottom: 30px;
+  }
+
+  .techs-grid {
+    grid-area: techs;
+  }
+
+  .left-tech {
+    grid-area: side-tech;
+    border-right: 1px solid $earls-green;
+  }
 }

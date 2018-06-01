@@ -1,31 +1,29 @@
 $tech-card-border-radius: 5px;
 
-.tech-container {
-  display: flex;
-  flex-wrap: wrap;
-  max-width: 960px;
-  width: 90%;
-  margin-left: 5%;
-
-  .tech-card {
-    margin: 30px 20px 0;
-  }
+.left-tech {
+  align-items: center;
+  display: grid;
+  justify-content: center;
 }
 
-.tech-header {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
+.techs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(2, auto);
+  justify-items: center;
 }
 
 .tech-card {
-  background-color: $earls-green;
+  align-items: center;
   border-radius: $tech-card-border-radius;
-  height: $tech-card-height;
-  padding: 20px 20px 0 10px;
+  display: grid;
+  padding: 20px 0;
   position: relative;
   text-align: center;
-  width: $tech-card-width;
+  width: 180px;
+  justify-items: center;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, auto);
 
   .tech-name {
     margin-top: 15px;
@@ -37,25 +35,6 @@ $tech-card-border-radius: 5px;
 
   .tech-description {
     margin-top: 25px;
-  }
-
-  &::before {
-    background-color: white;
-    border: 2px solid $earls-green;
-    border-radius: $tech-card-border-radius;
-    content: '';
-    height: $tech-card-height;
-    left: -10px;
-    position: absolute;
-    top: -10px;
-    width: $tech-card-width;
-    z-index: -1;
-    transition: top 0.5s ease, left 0.5s ease;
-  }
-
-  &:hover::before {
-    left: 5px;
-    top: 5px;
   }
 }
 
