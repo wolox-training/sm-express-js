@@ -12,6 +12,12 @@
 
 .text-4 {
   color: white;
-  font-size: $text-big;
+  font-size: $text-medium;
   text-transform: uppercase;
+}
+
+@media (min-width: $min-width-responsive) {
+  .text-4 {
+    font-size: $text-big;
+  }
 }

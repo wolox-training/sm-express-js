@@ -18,3 +18,9 @@
     width: 200px;
   }
 }
+
+@media (max-width: $max-width-responsive) {
+  .navbar {
+    font-size: 0;
+  }
+}
