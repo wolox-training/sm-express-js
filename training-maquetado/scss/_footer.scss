@@ -3,17 +3,16 @@
   background-color: $cerulean;
   bottom: 0;
   color: white;
-  display: flex;
+  display: grid;
   height: $footer-height;
-  justify-content: center;
   position: absolute;
   width: 100%;
 }
 
 .footer-text {
-  display: flex;
-  flex-direction: column;
   align-items: center;
+  display: grid;
+  justify-items: center;
 
   &::after {
     content: url(assets/wolox_logo_white.svg);
