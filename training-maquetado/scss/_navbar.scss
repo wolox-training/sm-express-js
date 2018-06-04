@@ -19,8 +19,8 @@
   }
 }
 
-@media (max-width: $max-width-responsive) {
-  .navbar {
-    font-size: 0;
+@media (min-width: $min-width-responsive) {
+  .nav-title {
+    display: none;
   }
 }
