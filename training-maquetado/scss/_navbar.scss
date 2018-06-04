@@ -18,3 +18,9 @@
     width: 200px;
   }
 }
+
+@media (min-width: $min-width-responsive) {
+  .nav-title {
+    display: none;
+  }
+}

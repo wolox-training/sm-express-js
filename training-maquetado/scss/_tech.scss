@@ -1,5 +1,6 @@
 $tech-card-border-radius: 5px;
 
+
 .left-tech {
   align-items: center;
   display: grid;
@@ -8,22 +9,27 @@ $tech-card-border-radius: 5px;
 
 .techs-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(2, auto);
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(5, auto);
   justify-items: center;
 }
 
 .tech-card {
   align-items: center;
+  border-bottom: 1px solid $earls-green;
   border-radius: $tech-card-border-radius;
   display: grid;
-  padding: 20px 0;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(5, auto);
+  padding: 20px 10px;
   position: relative;
+  justify-items: center;
   text-align: center;
   width: 180px;
-  justify-items: center;
-  grid-template-columns: 1fr;
-  grid-template-rows: repeat(4, auto);
+
+  &:last-child {
+    border-bottom: 0;
+  }
 
   .tech-name {
     margin-top: 15px;
@@ -41,4 +47,19 @@ $tech-card-border-radius: 5px;
 .tech-logo {
   height: 100px;
   width: 100px;
+}
+
+
+@media (min-width: $min-width-responsive) {
+  .techs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    justify-items: center;
+  }
+
+  .tech-card {
+    border-bottom: 0;
+    padding: 20px 0;
+  }
 }

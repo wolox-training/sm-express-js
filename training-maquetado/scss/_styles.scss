@@ -11,26 +11,38 @@
 
 .section-grid {
   display: grid;
-  margin: 50px 110px;
-  max-width: 960px;
-  width: 100%;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: repeat(3, auto);
-  grid-template-areas: "title title title title"
-                        ". side-tech techs techs"
-                        ". side-tech techs techs";
-
+  margin: 100px 40px;
   .title {
-    grid-area: title;
     margin-bottom: 30px;
   }
+  grid-template-columns: 1fr;
 
-  .techs-grid {
-    grid-area: techs;
+  grid-template-rows: repeat(6, auto);
+}
+
+@media (min-width: $min-width-responsive) {
+  .section-grid {
+    display: grid;
+    margin: 50px 110px;
+    max-width: 910px;
+    width: 100%;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, auto);
+    grid-template-areas: "title title title title" ". side-tech techs techs" ". side-tech techs techs";
+
+    .title {
+      grid-area: title;
+      margin-bottom: 30px;
+    }
+
+    .techs-grid {
+      grid-area: techs;
+    }
+
+    .left-tech {
+      grid-area: side-tech;
+      border-right: 1px solid $earls-green;
+    }
   }
 
-  .left-tech {
-    grid-area: side-tech;
-    border-right: 1px solid $earls-green;
-  }
 }
