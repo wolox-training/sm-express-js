@@ -1,4 +1,9 @@
 exports.config = {
   environment: 'development',
-  isDevelopment: true
+  isDevelopment: true,
+  common: {
+    database: {
+      name: 'bookstest'
+    }
+  }
 };
