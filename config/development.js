@@ -3,7 +3,7 @@ exports.config = {
   isDevelopment: true,
   common: {
     database: {
-      name: 'bookstest'
+      name: 'wolox-training'
     }
   }
 };
