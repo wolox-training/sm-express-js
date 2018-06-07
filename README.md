@@ -1,6 +1,13 @@
+[![Build Status](https://travis-ci.org/wolox-training/sm-express-js.svg?branch=master)](https://travis-ci.org/wolox-training/sm-express-js)
+
 # Wolox Training
 
 This is a training project. It will include two modules, one for "Maquetado" and other for "NodeJS"
+
+## ExpressJs
+
+This project is in the root, the only directory that doesn't belong to the project is "training-maquetado".
+It was created with Wolox's template.
 
 ## Maquetado
 
