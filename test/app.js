@@ -39,9 +39,3 @@ fs.readdirSync(normalizedPath).forEach(file => {
     require(`./${file}`);
   }
 });
-
-describe('dummy', () => {
-  it('dummy', () => {
-    console.log('dummy');
-  });
-});
