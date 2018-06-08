@@ -1,7 +1,7 @@
-// const controller = require('./controllers/controller');
+const usersController = require('./controllers/users'),
+  userValidator = require('./middlewares/userValidator'),
+  passwordEncrypt = require('./middlewares/passwordEncrypt');
 
 exports.init = app => {
-  // app.get('/endpoint/get/path', [], controller.methodGET);
-  // app.put('/endpoint/put/path', [], controller.methodPUT);
-  // app.post('/endpoint/post/path', [], controller.methodPOST);
+  app.post('/users', [userValidator, passwordEncrypt], usersController.save);
 };
