@@ -1,8 +1,8 @@
-const { user } = require('../models'),
+const { users } = require('../models'),
   logger = require('../logger');
 
 const save = (request, response) => {
-  user
+  users
     .create(request.body)
     .then(newUser => {
       const userData = newUser.dataValues;
