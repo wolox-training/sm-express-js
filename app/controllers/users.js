@@ -1,7 +1,7 @@
 const { users } = require('../models'),
   logger = require('../logger');
 
-const save = (request, response) => {
+const save = (request, response) =>
   users
     .create(request.body)
     .then(newUser => {
@@ -13,8 +13,7 @@ const save = (request, response) => {
     })
     .catch(error => {
       logger.error(error.original.detail);
-      response.status(403).send(error.original.detail);
+      response.status(400).send(error.original.detail);
     });
-};
 
 module.exports = { save };

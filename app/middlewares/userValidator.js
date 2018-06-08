@@ -1,9 +1,26 @@
-const userValidator = require('../services/userValidator');
+const validate = require('../helper/validator'),
+  validations = {
+    firstName: {
+      required: true
+    },
+    lastName: {
+      required: true
+    },
+    email: {
+      required: true,
+      woloxEmail: true
+    },
+    password: {
+      required: true,
+      minLength: 8
+    }
+  };
 
 module.exports = (request, response, next) => {
-  if (userValidator(request.body)) {
-    next();
+  const errors = validate(request.body, validations);
+  if (errors.length) {
+    response.status(400).send(errors);
   } else {
-    response.status(403).send('The information is invalid');
+    next();
   }
 };
