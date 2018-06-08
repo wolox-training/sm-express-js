@@ -13,7 +13,7 @@ const save = (request, response) =>
     })
     .catch(error => {
       logger.error(error.original.detail);
-      response.status(400).send(error.original.detail);
+      response.status(400).json(error.original.detail);
     });
 
 module.exports = { save };

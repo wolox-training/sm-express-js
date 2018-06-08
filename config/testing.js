@@ -3,7 +3,7 @@ exports.config = {
   isTesting: true,
   common: {
     database: {
-      name: process.env.NODE_API_DB_NAME_TEST
+      name: 'wolox-training'
     },
     session: {
       secret: 'some-super-secret'
