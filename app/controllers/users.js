@@ -26,8 +26,9 @@ const login = (request, response) =>
       if (user) {
         const match = await bcrypt.compare(request.body.password, user.password);
         if (match) {
-          delete user.password;
-          response.send({ token: jwt.encode(user, config.common.session.secret) });
+          const userData = user.dataValues;
+          delete userData.password;
+          response.send({ token: jwt.encode(userData, config.common.session.secret) });
         } else {
           response.status(401).json('The password does not match');
         }
@@ -40,4 +41,29 @@ const login = (request, response) =>
       response.status(503).json('There was an error, please try again later');
     });
 
-module.exports = { save, login };
+const findAll = (request, response) =>
+  users
+    .findAndCountAll()
+    .then(data => {
+      const limit = config.common.api.pageLimit;
+      const requestedPage = request.query.page && request.query.page > 0 ? request.query.page : 1;
+      const pages = Math.ceil(data.count / limit);
+      const currentPage = Math.min(pages, requestedPage);
+      const offset = limit * (currentPage - 1);
+      users
+        .findAll({
+          attributes: ['id', 'firstName', 'lastName', 'email'],
+          limit,
+          offset,
+          $sort: { id: 1 }
+        })
+        .then(result => {
+          response.json({ result, currentPage, pages });
+        });
+    })
+    .catch(err => {
+      logger.error('There was an error accessing the database', err);
+      response.status(503).json('There was an error, please try again later');
+    });
+
+module.exports = { save, login, findAll };

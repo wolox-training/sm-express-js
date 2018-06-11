@@ -7,6 +7,9 @@ exports.config = {
     },
     session: {
       secret: 'some-super-secret'
+    },
+    api: {
+      pageLimit: 1
     }
   }
 };
