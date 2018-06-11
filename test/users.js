@@ -2,7 +2,7 @@ const chai = require('chai'),
   dictum = require('dictum.js'),
   server = require('./../app'),
   should = chai.should(),
-  { users } = require('../app/models'),
+  { users, sequelize } = require('../app/models'),
   expect = require('chai').expect;
 
 describe('/users POST', () => {
@@ -325,33 +325,33 @@ describe('/users POST', () => {
 });
 
 describe('/users/sessions POST', () => {
-  const validUser = {
-    email: 'jane.doe@wolox.cl',
-    password: '$2a$10$Rtxlqx205LNuguX2htEK2./zuVhdtRRGJMgzPFntc3biK3/7C2rUC',
-    firstName: 'Jane',
-    lastName: 'Doe'
-  };
-  beforeEach(done => {
-    users.create(validUser).then(() => done());
-  });
   it('should return the token for the saved user', done => {
+    const validUser = {
+      email: 'jane.doe@wolox.cl',
+      password: '$2a$10$Rtxlqx205LNuguX2htEK2./zuVhdtRRGJMgzPFntc3biK3/7C2rUC',
+      firstName: 'Jane',
+      lastName: 'Doe'
+    };
     const user = {
       email: 'jane.doe@wolox.cl',
       password: '12345678'
     };
-    chai
-      .request(server)
-      .post('/users/sessions')
-      .send(user)
-      .then(res => {
-        res.should.have.status(200);
-        res.should.be.json;
-        expect(res.body.token).to.exist;
 
-        dictum.chai(res, 'The generated token for the user');
-        done();
-      })
-      .catch(err => done(err));
+    users.create(validUser).then(() =>
+      chai
+        .request(server)
+        .post('/users/sessions')
+        .send(user)
+        .then(res => {
+          res.should.have.status(200);
+          res.should.be.json;
+          expect(res.body.token).to.exist;
+
+          dictum.chai(res, 'The generated token for the user');
+          done();
+        })
+        .catch(err => done(err))
+    );
   });
 
   it('should fail when the password is undefined', done => {
@@ -508,5 +508,28 @@ describe('/users/sessions POST', () => {
         done();
       })
       .catch(err => done(err));
+  });
+
+  it('should fail and return error 503 when there is a problem with the database', done => {
+    const user = {
+      email: 'john.doe@wolox.cl',
+      password: '12345678'
+    };
+
+    sequelize.query('DROP TABLE users').then(() =>
+      chai
+        .request(server)
+        .post('/users/sessions')
+        .send(user)
+        .catch(err => {
+          const res = err.response;
+          res.should.have.status(503);
+          res.should.be.json;
+
+          expect(res.body).to.equal('There was an error, please try again later');
+          done();
+        })
+        .catch(err => done(err))
+    );
   });
 });

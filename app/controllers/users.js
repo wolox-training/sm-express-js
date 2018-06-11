@@ -22,16 +22,15 @@ const save = (request, response) =>
 const login = (request, response) =>
   users
     .findOne({ where: { email: request.body.email } })
-    .then(user => {
+    .then(async user => {
       if (user) {
-        bcrypt.compare(request.body.password, user.password, (err, res) => {
-          if (res) {
-            delete user.password;
-            response.send({ token: jwt.encode(user, config.common.session.secret) });
-          } else {
-            response.status(401).json('The password does not match');
-          }
-        });
+        const match = await bcrypt.compare(request.body.password, user.password);
+        if (match) {
+          delete user.password;
+          response.send({ token: jwt.encode(user, config.common.session.secret) });
+        } else {
+          response.status(401).json('The password does not match');
+        }
       } else {
         response.status(401).json('The user does not exist');
       }
