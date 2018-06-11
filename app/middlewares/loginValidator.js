@@ -1,11 +1,5 @@
 const baseValidator = require('./baseValidator'),
   validations = {
-    firstName: {
-      required: true
-    },
-    lastName: {
-      required: true
-    },
     email: {
       required: true,
       woloxEmail: true
