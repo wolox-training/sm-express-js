@@ -22,6 +22,10 @@ const thirdUser = {
   role: 'admin'
 };
 
-exports.execute = () => {
-  return Promise.all([users.create(firstUser), users.create(secondUser), users.create(thirdUser)]);
-};
+const createWrap = user => () => users.create(user);
+
+exports.execute = () =>
+  [createWrap(firstUser), createWrap(secondUser), createWrap(thirdUser)].reduce(
+    (p, fn) => p.then(fn),
+    Promise.resolve()
+  );
