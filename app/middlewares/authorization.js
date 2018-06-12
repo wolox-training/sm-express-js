@@ -9,7 +9,7 @@ module.exports = (request, response, next) => {
     try {
       const decodedUser = jwt.decode(token, config.common.session.secret);
       if (decodedUser.id && decodedUser.email) {
-        users
+        return users
           .findOne({ where: { id: decodedUser.id, email: decodedUser.email } })
           .then(user => {
             if (user) {

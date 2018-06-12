@@ -50,7 +50,7 @@ const findAll = (request, response) =>
       const pages = Math.ceil(data.count / limit);
       const currentPage = Math.min(pages, requestedPage);
       const offset = limit * (currentPage - 1);
-      users
+      return users
         .findAll({
           attributes: ['id', 'firstName', 'lastName', 'email'],
           limit,

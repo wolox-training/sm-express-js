@@ -21,8 +21,6 @@ const thirdUser = {
   lastName: 'Lucis'
 };
 
-exports.execute = async () => {
-  await users.create(firstUser);
-  await users.create(secondUser);
-  return users.create(thirdUser);
+exports.execute = () => {
+  return Promise.all(users.create(firstUser), users.create(secondUser), users.create(thirdUser));
 };
