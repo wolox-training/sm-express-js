@@ -1,9 +1,11 @@
-const usersController = require('./controllers/users'),
+const { findAll, save, login } = require('./controllers/users'),
+  authorization = require('./middlewares/authorization'),
   userValidator = require('./middlewares/userValidator'),
   loginValidator = require('./middlewares/loginValidator'),
   passwordEncrypt = require('./middlewares/passwordEncrypt');
 
 exports.init = app => {
-  app.post('/users', [userValidator, passwordEncrypt], usersController.save);
-  app.post('/users/sessions', [loginValidator], usersController.login);
+  app.get('/users', [authorization], findAll);
+  app.post('/users', [userValidator, passwordEncrypt], save);
+  app.post('/users/sessions', [loginValidator], login);
 };

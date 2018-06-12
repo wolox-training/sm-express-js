@@ -1,8 +1,10 @@
 const chai = require('chai'),
   dictum = require('dictum.js'),
   server = require('./../app'),
+  config = require('../config'),
+  { sequelize } = require('../app/models'),
+  jwt = require('jwt-simple'),
   should = chai.should(),
-  { users, sequelize } = require('../app/models'),
   expect = require('chai').expect;
 
 describe('/users POST', () => {
@@ -326,32 +328,30 @@ describe('/users POST', () => {
 
 describe('/users/sessions POST', () => {
   it('should return the token for the saved user', done => {
-    const validUser = {
-      email: 'jane.doe@wolox.cl',
-      password: '$2a$10$Rtxlqx205LNuguX2htEK2./zuVhdtRRGJMgzPFntc3biK3/7C2rUC',
-      firstName: 'Jane',
-      lastName: 'Doe'
-    };
     const user = {
       email: 'jane.doe@wolox.cl',
       password: '12345678'
     };
 
-    users.create(validUser).then(() =>
-      chai
-        .request(server)
-        .post('/users/sessions')
-        .send(user)
-        .then(res => {
-          res.should.have.status(200);
-          res.should.be.json;
-          expect(res.body.token).to.exist;
+    chai
+      .request(server)
+      .post('/users/sessions')
+      .send(user)
+      .then(res => {
+        res.should.have.status(200);
+        res.should.be.json;
+        expect(res.body.token).to.exist;
 
-          dictum.chai(res, 'The generated token for the user');
-          done();
-        })
-        .catch(err => done(err))
-    );
+        const encodedUser = jwt.decode(res.body.token, config.common.session.secret);
+
+        expect(encodedUser.id).to.exist;
+        expect(encodedUser.password).be.undefined;
+        expect(encodedUser.email).to.equal(user.email);
+
+        dictum.chai(res, 'The generated token for the user');
+        done();
+      })
+      .catch(err => done(err));
   });
 
   it('should fail when the password is undefined', done => {
@@ -510,7 +510,7 @@ describe('/users/sessions POST', () => {
       .catch(err => done(err));
   });
 
-  it('should fail and return error 503 when there is a problem with the database', done => {
+  xit('should fail and return error 503 when there is a problem with the database', done => {
     const user = {
       email: 'john.doe@wolox.cl',
       password: '12345678'
@@ -531,5 +531,200 @@ describe('/users/sessions POST', () => {
         })
         .catch(err => done(err))
     );
+  });
+});
+
+describe('/users GET', () => {
+  it('should obtain all users, currentPage and totalPages', done => {
+    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const page = 2;
+
+    chai
+      .request(server)
+      .get('/users')
+      .set(config.common.session.header_name, validToken)
+      .query({ page })
+      .then(res => {
+        res.should.have.status(200);
+        res.should.be.json;
+        expect(res.body.result.length).to.equal(1);
+        expect(res.body.result[0].id).to.equal(2);
+        expect(res.body.result[0].firstName).to.equal('Jane');
+        expect(res.body.result[0].lastName).to.equal('Doe');
+        expect(res.body.result[0].email).to.equal('jane.doe@wolox.com.ar');
+        expect(res.body.result[0].password).to.be.undefined;
+        expect(res.body.currentPage).to.equal(page);
+        expect(res.body.pages).to.equal(3);
+
+        dictum.chai(res, 'Find all users validating if the user is authenticated');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should obtain all users, totalPages and set currentPage to 1 if it is not passed in as query param', done => {
+    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+
+    chai
+      .request(server)
+      .get('/users')
+      .set(config.common.session.header_name, validToken)
+      .then(res => {
+        res.should.have.status(200);
+        res.should.be.json;
+        expect(res.body.result.length).to.equal(1);
+        expect(res.body.result[0].id).to.equal(1);
+        expect(res.body.result[0].firstName).to.equal('Jane');
+        expect(res.body.result[0].lastName).to.equal('Doe');
+        expect(res.body.result[0].email).to.equal('jane.doe@wolox.cl');
+        expect(res.body.result[0].password).to.be.undefined;
+        expect(res.body.currentPage).to.equal(1);
+        expect(res.body.pages).to.equal(3);
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should obtain all users, totalPages and set currentPage to the max page if the requested greater than the max', done => {
+    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const page = 10000;
+
+    chai
+      .request(server)
+      .get('/users')
+      .set(config.common.session.header_name, validToken)
+      .query({ page })
+      .then(res => {
+        res.should.have.status(200);
+        res.should.be.json;
+        expect(res.body.result.length).to.equal(1);
+        expect(res.body.result[0].id).to.equal(3);
+        expect(res.body.result[0].firstName).to.equal('Noctis');
+        expect(res.body.result[0].lastName).to.equal('Lucis');
+        expect(res.body.result[0].email).to.equal('noctis.lucis@wolox.com.ar');
+        expect(res.body.result[0].password).to.be.undefined;
+        expect(res.body.currentPage).to.equal(3);
+        expect(res.body.pages).to.equal(3);
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if the token does not contain valid id and email combination', done => {
+    const invalidToken = jwt.encode({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const page = 2;
+
+    chai
+      .request(server)
+      .get('/users')
+      .set(config.common.session.header_name, invalidToken)
+      .query({ page })
+      .catch(err => {
+        const res = err.response;
+        res.should.have.status(401);
+        res.should.be.json;
+
+        expect(res.body).to.equal('Invalid authorization token data');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if the token does not contain an email without calling the database', done => {
+    const invalidToken = jwt.encode({ id: 1 }, config.common.session.secret);
+    const page = 2;
+
+    chai
+      .request(server)
+      .get('/users')
+      .set(config.common.session.header_name, invalidToken)
+      .query({ page })
+      .catch(err => {
+        const res = err.response;
+        res.should.have.status(401);
+        res.should.be.json;
+
+        expect(res.body).to.equal('Invalid authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if the token does not contain an id without calling the database', done => {
+    const invalidToken = jwt.encode({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const page = 2;
+
+    chai
+      .request(server)
+      .get('/users')
+      .set(config.common.session.header_name, invalidToken)
+      .query({ page })
+      .catch(err => {
+        const res = err.response;
+        res.should.have.status(401);
+        res.should.be.json;
+
+        expect(res.body).to.equal('Invalid authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if the token is invalid', done => {
+    const invalidToken = 'blahblah';
+    const page = 2;
+
+    chai
+      .request(server)
+      .get('/users')
+      .set(config.common.session.header_name, invalidToken)
+      .query({ page })
+      .catch(err => {
+        const res = err.response;
+        res.should.have.status(401);
+        res.should.be.json;
+
+        expect(res.body).to.equal('Invalid authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if the token is not in the correct header key', done => {
+    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const page = 2;
+
+    chai
+      .request(server)
+      .get('/users')
+      .set('x-access-token', validToken)
+      .query({ page })
+      .catch(err => {
+        const res = err.response;
+        res.should.have.status(401);
+        res.should.be.json;
+
+        expect(res.body).to.equal('Missing authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if there is no token in the header', done => {
+    const page = 2;
+
+    chai
+      .request(server)
+      .get('/users')
+      .query({ page })
+      .catch(err => {
+        const res = err.response;
+        res.should.have.status(401);
+        res.should.be.json;
+
+        expect(res.body).to.equal('Missing authorization token');
+        done();
+      })
+      .catch(err => done(err));
   });
 });

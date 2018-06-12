@@ -12,7 +12,7 @@ chai.use(chaiHttp);
 const getTablesQuery = `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';`;
 
 // THIS WORKS ONLY WITH POSTGRESQL
-beforeEach('drop tables, re-create them and populate sample data', done => {
+beforeEach('Erase data, restart identities and populate sample data', done => {
   models.sequelize.query(getTablesQuery).then(tables => {
     const tableExpression = tables
       .map(table => {
