@@ -3,7 +3,7 @@ const jwt = require('jwt-simple'),
   { users } = require('../models'),
   logger = require('../logger');
 
-module.exports = (request, response, next) => {
+const loggedIn = (request, response, next) => {
   const token = request.headers[config.common.session.header_name];
   if (token) {
     try {
@@ -13,6 +13,7 @@ module.exports = (request, response, next) => {
           .findOne({ where: { id: decodedUser.id, email: decodedUser.email } })
           .then(user => {
             if (user) {
+              response.locals.loggedUser = user;
               next();
             } else {
               logger.info(
@@ -36,3 +37,11 @@ module.exports = (request, response, next) => {
     response.status(401).json('Missing authorization token');
   }
 };
+
+const isAdmin = (request, response, next) => {
+  if (response.locals.loggedUser.role !== 'admin')
+    return response.status(403).json('You do not have permission to access this resource');
+  next();
+};
+
+module.exports = { loggedIn, isAdmin };

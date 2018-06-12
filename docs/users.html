@@ -1,21 +1,23 @@
 <html><head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" /><script src="https://code.jquery.com/jquery-1.12.2.min.js"></script><script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script><style> pre { width: 95%; } </style></head><body><div class="container"><div class="jumbotron"><h1>Users</h1></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-POST"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-POST" href="#collapse-users-POST">POST /users</a></h4></div><div id="collapse-users-POST" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-POST"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
   "content-type": "application/json",
-  "content-length": 87
+  "content-length": 102
 }</pre><h5>Body</h5><pre>{
   "firstName": "John",
   "lastName": "Doe",
   "email": "john.doe@wolox.cl",
-  "password": "12345678"
+  "password": "12345678",
+  "role": "admin"
 }</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 201</h5><h5>Headers</h5><pre>{
   "content-type": "application/json",
-  "content-length": 87
+  "content-length": 102
 }</pre><h5>Body</h5><pre>{
   "id": 4,
   "firstName": "John",
   "lastName": "Doe",
   "email": "john.doe@wolox.cl",
-  "updatedAt": "2018-06-11T22:39:47.043Z",
-  "createdAt": "2018-06-11T22:39:47.043Z"
+  "role": "regular",
+  "updatedAt": "2018-06-12T19:26:01.443Z",
+  "createdAt": "2018-06-12T19:26:01.443Z"
 }</pre></div></div></div></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-sessions-POST"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-sessions-POST" href="#collapse-users-sessions-POST">POST /users/sessions</a></h4></div><div id="collapse-users-sessions-POST" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-sessions-POST"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
   "content-type": "application/json",
   "content-length": 51
@@ -26,7 +28,7 @@
   "content-type": "application/json",
   "content-length": 51
 }</pre><h5>Body</h5><pre>{
-  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSmFuZSIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqYW5lLmRvZUB3b2xveC5jbCIsImNyZWF0ZWRBdCI6IjIwMTgtMDYtMTFUMjI6Mzk6NDcuNTIxWiIsInVwZGF0ZWRBdCI6IjIwMTgtMDYtMTFUMjI6Mzk6NDcuNTIxWiJ9.OeXWxyApsSjPcpQxtkU4Hp8bIwDo3GsIf-eaIDW6wxA"
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZmlyc3ROYW1lIjoiSmFuZSIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqYW5lLmRvZUB3b2xveC5jbCIsInJvbGUiOiJyZWd1bGFyIiwiY3JlYXRlZEF0IjoiMjAxOC0wNi0xMlQxOToyNjowMS44NDJaIiwidXBkYXRlZEF0IjoiMjAxOC0wNi0xMlQxOToyNjowMS44NDJaIn0.4j9FANvEODeqh-2K69zRPOsa_g-f6qRHRlEuLiWexQo"
 }</pre></div></div></div></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-GET"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-GET" href="#collapse-users-GET">GET /users?page=2</a></h4></div><div id="collapse-users-GET" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-GET"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
   "authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZW1haWwiOiJqYW5lLmRvZUB3b2xveC5jbCJ9.D4R0mjFatw7HNH6ur8GyUlupV6qfNS8Czu_2Ka7RKM8"
 }</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 200</h5><h5>Headers</h5><pre>{
@@ -42,4 +44,22 @@
   ],
   "currentPage": 2,
   "pages": 3
+}</pre></div></div></div></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-admin-POST"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-admin-POST" href="#collapse-users-admin-POST">POST /users/admin</a></h4></div><div id="collapse-users-admin-POST" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-admin-POST"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
+  "authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZW1haWwiOiJub2N0aXMubHVjaXNAd29sb3guY29tLmFyIn0.voi72ERHjRiJIUI61_MuznnqU4iGsEhPae7CBgQb2zQ",
+  "content-type": "application/json",
+  "content-length": 87
+}</pre><h5>Body</h5><pre>{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@wolox.cl",
+  "password": "12345678"
+}</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 201</h5><h5>Headers</h5><pre>{
+  "authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZW1haWwiOiJub2N0aXMubHVjaXNAd29sb3guY29tLmFyIn0.voi72ERHjRiJIUI61_MuznnqU4iGsEhPae7CBgQb2zQ",
+  "content-type": "application/json",
+  "content-length": 87
+}</pre><h5>Body</h5><pre>{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@wolox.cl",
+  "role": "admin"
 }</pre></div></div></div></div></div></body></html>
