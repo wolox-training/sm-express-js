@@ -4,7 +4,6 @@ const chai = require('chai'),
   config = require('../config'),
   { users, sequelize } = require('../app/models'),
   jwt = require('jwt-simple'),
-  should = chai.should(),
   expect = require('chai').expect;
 
 describe('/users POST', () => {
@@ -21,8 +20,8 @@ describe('/users POST', () => {
       .post('/users')
       .send(validUser)
       .then(res => {
-        res.should.have.status(201);
-        res.should.be.json;
+        expect(res.status).to.equal(201);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
         expect(res.body.password).to.be.undefined;
         expect(res.body.id).to.exist;
         expect(res.body.role).to.equal('regular');
@@ -46,8 +45,8 @@ describe('/users POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute firstName does not fulfill the condition required:true');
@@ -70,8 +69,8 @@ describe('/users POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute firstName does not fulfill the condition required:true');
@@ -93,8 +92,8 @@ describe('/users POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute lastName does not fulfill the condition required:true');
@@ -117,8 +116,8 @@ describe('/users POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute lastName does not fulfill the condition required:true');
@@ -140,8 +139,8 @@ describe('/users POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition required:true');
@@ -165,8 +164,8 @@ describe('/users POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition required:true');
@@ -190,8 +189,8 @@ describe('/users POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition woloxEmail:true');
@@ -214,8 +213,8 @@ describe('/users POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition woloxEmail:true');
@@ -237,8 +236,8 @@ describe('/users POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute password does not fulfill the condition required:true');
@@ -262,8 +261,8 @@ describe('/users POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute password does not fulfill the condition required:true');
@@ -287,8 +286,8 @@ describe('/users POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute password does not fulfill the condition minLength:8');
@@ -316,8 +315,8 @@ describe('/users POST', () => {
           .send(validUser)
           .catch(err => {
             const res = err.response;
-            res.should.have.status(400);
-            res.should.be.json;
+            expect(res.status).to.equal(400);
+            expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
             expect(res.body).to.equal('Key (email)=(john.doe@wolox.com.ar) already exists.');
             done();
@@ -340,8 +339,8 @@ describe('/users/sessions POST', () => {
       .post('/users/sessions')
       .send(user)
       .then(res => {
-        res.should.have.status(200);
-        res.should.be.json;
+        expect(res.status).to.equal(200);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
         expect(res.body.token).to.exist;
 
         const encodedUser = jwt.decode(res.body.token, config.common.session.secret);
@@ -367,8 +366,8 @@ describe('/users/sessions POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute password does not fulfill the condition required:true');
@@ -390,8 +389,8 @@ describe('/users/sessions POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute password does not fulfill the condition required:true');
@@ -413,8 +412,8 @@ describe('/users/sessions POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute password does not fulfill the condition minLength:8');
@@ -434,8 +433,8 @@ describe('/users/sessions POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition required:true');
@@ -457,8 +456,8 @@ describe('/users/sessions POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition required:true');
@@ -480,8 +479,8 @@ describe('/users/sessions POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition woloxEmail:true');
@@ -502,8 +501,8 @@ describe('/users/sessions POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition woloxEmail:true');
@@ -525,8 +524,8 @@ describe('/users/sessions POST', () => {
         .send(user)
         .catch(err => {
           const res = err.response;
-          res.should.have.status(503);
-          res.should.be.json;
+          expect(res.status).to.equal(503);
+          expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
           expect(res.body).to.equal('There was an error, please try again later');
           done();
@@ -547,8 +546,8 @@ describe('/users GET', () => {
       .set(config.common.session.header_name, validToken)
       .query({ page })
       .then(res => {
-        res.should.have.status(200);
-        res.should.be.json;
+        expect(res.status).to.equal(200);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
         expect(res.body.result.length).to.equal(1);
         expect(res.body.result[0].id).to.equal(2);
         expect(res.body.result[0].firstName).to.equal('Jane');
@@ -572,8 +571,8 @@ describe('/users GET', () => {
       .get('/users')
       .set(config.common.session.header_name, validToken)
       .then(res => {
-        res.should.have.status(200);
-        res.should.be.json;
+        expect(res.status).to.equal(200);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
         expect(res.body.result.length).to.equal(1);
         expect(res.body.result[0].id).to.equal(1);
         expect(res.body.result[0].firstName).to.equal('Jane');
@@ -597,8 +596,8 @@ describe('/users GET', () => {
       .set(config.common.session.header_name, validToken)
       .query({ page })
       .then(res => {
-        res.should.have.status(200);
-        res.should.be.json;
+        expect(res.status).to.equal(200);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
         expect(res.body.result.length).to.equal(1);
         expect(res.body.result[0].id).to.equal(3);
         expect(res.body.result[0].firstName).to.equal('Noctis');
@@ -623,8 +622,8 @@ describe('/users GET', () => {
       .query({ page })
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Invalid authorization token data');
         done();
@@ -643,8 +642,8 @@ describe('/users GET', () => {
       .query({ page })
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Invalid authorization token');
         done();
@@ -663,8 +662,8 @@ describe('/users GET', () => {
       .query({ page })
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Invalid authorization token');
         done();
@@ -683,8 +682,8 @@ describe('/users GET', () => {
       .query({ page })
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Invalid authorization token');
         done();
@@ -703,8 +702,8 @@ describe('/users GET', () => {
       .query({ page })
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Missing authorization token');
         done();
@@ -721,8 +720,8 @@ describe('/users GET', () => {
       .query({ page })
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Missing authorization token');
         done();
@@ -750,8 +749,8 @@ describe('/users/admin POST', () => {
       .set(config.common.session.header_name, validToken)
       .send(validUser)
       .then(res => {
-        res.should.have.status(201);
-        res.should.be.json;
+        expect(res.status).to.equal(201);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
         expect(res.body.password).to.be.undefined;
         expect(res.body.role).to.equal('admin');
 
@@ -781,8 +780,8 @@ describe('/users/admin POST', () => {
       .set(config.common.session.header_name, validToken)
       .send(validUser)
       .then(res => {
-        res.should.have.status(200);
-        res.should.be.json;
+        expect(res.status).to.equal(200);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.password).to.be.undefined;
 
@@ -819,8 +818,8 @@ describe('/users/admin POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute firstName does not fulfill the condition required:true');
@@ -849,8 +848,8 @@ describe('/users/admin POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute firstName does not fulfill the condition required:true');
@@ -878,8 +877,8 @@ describe('/users/admin POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute lastName does not fulfill the condition required:true');
@@ -908,8 +907,8 @@ describe('/users/admin POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute lastName does not fulfill the condition required:true');
@@ -937,8 +936,8 @@ describe('/users/admin POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition required:true');
@@ -968,8 +967,8 @@ describe('/users/admin POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition required:true');
@@ -999,8 +998,8 @@ describe('/users/admin POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition woloxEmail:true');
@@ -1029,8 +1028,8 @@ describe('/users/admin POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute email does not fulfill the condition woloxEmail:true');
@@ -1058,8 +1057,8 @@ describe('/users/admin POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute password does not fulfill the condition required:true');
@@ -1089,8 +1088,8 @@ describe('/users/admin POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(2);
         expect(res.body[0]).to.equal('The attribute password does not fulfill the condition required:true');
@@ -1120,8 +1119,8 @@ describe('/users/admin POST', () => {
       .send(invalidUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(400);
-        res.should.be.json;
+        expect(res.status).to.equal(400);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body.length).to.equal(1);
         expect(res.body[0]).to.equal('The attribute password does not fulfill the condition minLength:8');
@@ -1146,8 +1145,8 @@ describe('/users/admin POST', () => {
       .send(validUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(403);
-        res.should.be.json;
+        expect(res.status).to.equal(403);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('You do not have permission to access this resource');
         done();
@@ -1171,8 +1170,8 @@ describe('/users/admin POST', () => {
       .send(validUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Invalid authorization token data');
         done();
@@ -1196,8 +1195,8 @@ describe('/users/admin POST', () => {
       .send(validUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Invalid authorization token');
         done();
@@ -1221,8 +1220,8 @@ describe('/users/admin POST', () => {
       .send(validUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Invalid authorization token');
         done();
@@ -1246,8 +1245,8 @@ describe('/users/admin POST', () => {
       .send(validUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Invalid authorization token');
         done();
@@ -1271,8 +1270,8 @@ describe('/users/admin POST', () => {
       .send(validUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Missing authorization token');
         done();
@@ -1294,8 +1293,8 @@ describe('/users/admin POST', () => {
       .send(validUser)
       .catch(err => {
         const res = err.response;
-        res.should.have.status(401);
-        res.should.be.json;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
 
         expect(res.body).to.equal('Missing authorization token');
         done();

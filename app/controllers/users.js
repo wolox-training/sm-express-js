@@ -3,10 +3,11 @@ const { users } = require('../models'),
   jwt = require('jwt-simple'),
   config = require('../../config'),
   { to } = require('../helper/asyncHelper'),
+  { ADMIN, REGULAR } = require('../roles'),
   logger = require('../logger');
 
 const save = async (request, response) => {
-  const user = Object.assign(request.body, { role: 'regular' });
+  const user = Object.assign(request.body, { role: REGULAR });
 
   const [error, newUser] = await to(users.create(user));
 
@@ -23,7 +24,7 @@ const save = async (request, response) => {
 };
 
 const saveOrUpdateAdmin = async (request, response) => {
-  const user = Object.assign(request.body, { role: 'admin' });
+  const user = Object.assign(request.body, { role: ADMIN });
 
   const [error, created] = await to(users.upsert(user, { fields: ['role'] }));
 

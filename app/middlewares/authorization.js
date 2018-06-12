@@ -1,6 +1,7 @@
 const jwt = require('jwt-simple'),
   config = require('../../config'),
   { users } = require('../models'),
+  { ADMIN } = require('../roles'),
   logger = require('../logger');
 
 const loggedIn = (request, response, next) => {
@@ -39,7 +40,7 @@ const loggedIn = (request, response, next) => {
 };
 
 const isAdmin = (request, response, next) => {
-  if (response.locals.loggedUser.role !== 'admin')
+  if (response.locals.loggedUser.role !== ADMIN)
     return response.status(403).json('You do not have permission to access this resource');
   next();
 };
