@@ -22,5 +22,5 @@ const thirdUser = {
 };
 
 exports.execute = () => {
-  return Promise.all(users.create(firstUser), users.create(secondUser), users.create(thirdUser));
+  return Promise.all([users.create(firstUser), users.create(secondUser), users.create(thirdUser)]);
 };
