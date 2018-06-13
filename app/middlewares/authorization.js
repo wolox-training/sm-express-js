@@ -1,4 +1,5 @@
-const { jwtDecode, to } = require('../helper'),
+const jwtDecode = require('../helper/jwtDecode'),
+  to = require('../helper/to'),
   config = require('../../config').common.session,
   { users } = require('../models'),
   { ADMIN } = require('../roles'),
