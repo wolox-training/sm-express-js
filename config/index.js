@@ -40,7 +40,8 @@ const config = {
     api: {
       bodySizeLimit: process.env.API_BODY_SIZE_LIMIT,
       parameterLimit: process.env.API_PARAMETER_LIMIT,
-      pageLimit: process.env.API_PAGE_LIMIT
+      pageLimit: process.env.API_PAGE_LIMIT,
+      albumsEndpoint: process.env.API_ALBUMS_ENDPOINT
     },
     session: {
       header_name: 'authorization',

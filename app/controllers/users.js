@@ -2,7 +2,7 @@ const { users } = require('../models'),
   bcrypt = require('bcryptjs'),
   jwt = require('jwt-simple'),
   config = require('../../config'),
-  { to } = require('../helper/asyncHelper'),
+  to = require('../helper/to'),
   { ADMIN, REGULAR } = require('../roles'),
   logger = require('../logger');
 
