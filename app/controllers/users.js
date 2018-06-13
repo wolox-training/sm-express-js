@@ -2,22 +2,43 @@ const { users } = require('../models'),
   bcrypt = require('bcryptjs'),
   jwt = require('jwt-simple'),
   config = require('../../config'),
+  { to } = require('../helper/asyncHelper'),
+  { ADMIN, REGULAR } = require('../roles'),
   logger = require('../logger');
 
-const save = (request, response) =>
-  users
-    .create(request.body)
-    .then(newUser => {
-      const userData = newUser.dataValues;
-      delete userData.password;
+const save = async (request, response) => {
+  const user = Object.assign(request.body, { role: REGULAR });
 
-      logger.info(`The user ${userData.firstName} has been created`);
-      response.status(201).send(userData);
-    })
-    .catch(error => {
-      logger.error(error.original.detail);
-      response.status(400).json(error.original.detail);
-    });
+  const [error, newUser] = await to(users.create(user));
+
+  if (error) {
+    logger.error(error);
+    return response.status(400).json(error.original.detail);
+  }
+
+  const userData = newUser.dataValues;
+  delete userData.password;
+
+  logger.info(`The user ${userData.firstName} has been created`);
+  response.status(201).send(userData);
+};
+
+const saveOrUpdateAdmin = async (request, response) => {
+  const user = Object.assign(request.body, { role: ADMIN });
+
+  const [error, created] = await to(users.upsert(user, { fields: ['role'] }));
+
+  if (error) {
+    logger.error(error);
+    return response.status(400).json(error.errors.map(element => element.message));
+  }
+
+  delete user.password;
+  const { status = 200, message = 'updated' } = created ? { status: 201, message: 'created' } : {};
+
+  logger.info(`The user ${user.firstName} has been ${message}`);
+  return response.status(status).send(user);
+};
 
 const login = (request, response) =>
   users
@@ -66,4 +87,4 @@ const findAll = (request, response) =>
       response.status(503).json('There was an error, please try again later');
     });
 
-module.exports = { save, login, findAll };
+module.exports = { save, login, findAll, saveOrUpdateAdmin };
