@@ -15,9 +15,8 @@ const getTablesQuery = `SELECT table_name FROM information_schema.tables WHERE t
 beforeEach('Erase data, restart identities and populate sample data', done => {
   models.sequelize.query(getTablesQuery).then(tables => {
     const tableExpression = tables
-      .map(table => {
-        return `"public"."${table[0]}"`;
-      })
+      .filter(([tableName]) => tableName !== 'SequelizeMeta')
+      .map(([tableName]) => `"public"."${tableName}"`)
       .join(', ');
     return models.sequelize
       .query(`TRUNCATE TABLE ${tableExpression} RESTART IDENTITY`)
