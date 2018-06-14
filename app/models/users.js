@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define(
+  const users = sequelize.define(
     'users',
     {
       id: {
@@ -34,4 +34,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
   );
+
+  users.associate = models => {
+    models.users.belongsToMany(models.albums, { through: 'users_albums' });
+  };
+
+  return users;
 };
