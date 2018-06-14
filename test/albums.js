@@ -21,8 +21,8 @@ describe('/albums GET', () => {
         title: 'consectetur adipiscing elit'
       }
     ];
-    nock('https://jsonplaceholder.typicode.com')
-      .get('/albums')
+    nock(config.common.api.albumsEndpointHost)
+      .get(config.common.api.albumsEndpointRoute)
       .reply(200, mockResponse);
 
     const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
@@ -44,8 +44,8 @@ describe('/albums GET', () => {
 
   it('should return the error as is when the site answer an error', done => {
     const mockError = { message: 'Vivamus convallis diam in nisi maximus dictum.' };
-    nock('https://jsonplaceholder.typicode.com')
-      .get('/albums')
+    nock(config.common.api.albumsEndpointHost)
+      .get(config.common.api.albumsEndpointRoute)
       .reply(503, mockError);
 
     const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
@@ -179,8 +179,8 @@ describe('/albums/:id POST', () => {
       id: desiredId,
       title: `consectetur adipiscing elit ${Math.floor(Math.random() * 1000)}`
     };
-    nock('https://jsonplaceholder.typicode.com')
-      .get(`/albums/${desiredId}`)
+    nock(config.common.api.albumsEndpointHost)
+      .get(`${config.common.api.albumsEndpointRoute}/${desiredId}`)
       .reply(200, mockResponse);
 
     const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
@@ -219,8 +219,8 @@ describe('/albums/:id POST', () => {
       id: desiredId,
       title: `consectetur adipiscing elit ${Math.floor(Math.random() * 1000)}`
     };
-    nock('https://jsonplaceholder.typicode.com')
-      .get(`/albums/${desiredId}`)
+    nock(config.common.api.albumsEndpointHost)
+      .get(`${config.common.api.albumsEndpointRoute}/${desiredId}`)
       .reply(200, mockResponse);
 
     const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
@@ -249,8 +249,8 @@ describe('/albums/:id POST', () => {
       id: desiredId,
       title: `consectetur adipiscing elit ${Math.floor(Math.random() * 1000)}`
     };
-    nock('https://jsonplaceholder.typicode.com')
-      .get(`/albums/${desiredId}`)
+    nock(config.common.api.albumsEndpointHost)
+      .get(`${config.common.api.albumsEndpointRoute}/${desiredId}`)
       .reply(200, mockResponse);
 
     const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
@@ -281,8 +281,8 @@ describe('/albums/:id POST', () => {
   it('should fail if the album does not exists', done => {
     const desiredId = Math.floor(Math.random() * 100);
     const mockResponse = {};
-    nock('https://jsonplaceholder.typicode.com')
-      .get(`/albums/${desiredId}`)
+    nock(config.common.api.albumsEndpointHost)
+      .get(`${config.common.api.albumsEndpointRoute}/${desiredId}`)
       .reply(200, mockResponse);
 
     const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
