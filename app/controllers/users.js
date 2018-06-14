@@ -1,6 +1,6 @@
 const { users } = require('../models'),
   bcrypt = require('bcryptjs'),
-  jwt = require('jwt-simple'),
+  jwt = require('jsonwebtoken'),
   config = require('../../config'),
   axios = require('axios'),
   to = require('../helper/to'),
@@ -55,7 +55,11 @@ const login = (request, response) =>
         if (match) {
           const userData = user.dataValues;
           delete userData.password;
-          response.send({ token: jwt.encode(userData, config.common.session.secret) });
+          const expiresIn = config.common.session.expireTime;
+          response.send({
+            token: jwt.sign(userData, config.common.session.secret, { expiresIn }),
+            expiresIn
+          });
         } else {
           response.status(401).json('The password does not match');
         }

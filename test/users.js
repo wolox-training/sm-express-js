@@ -3,7 +3,7 @@ const chai = require('chai'),
   server = require('./../app'),
   config = require('../config'),
   { users, albums, sequelize } = require('../app/models'),
-  jwt = require('jwt-simple'),
+  jwt = require('jsonwebtoken'),
   nock = require('nock'),
   expect = require('chai').expect;
 
@@ -343,8 +343,9 @@ describe('/users/sessions POST', () => {
         expect(res.status).to.equal(200);
         expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
         expect(res.body.token).to.exist;
+        expect(res.body.expiresIn).to.equal(config.common.session.expireTime);
 
-        const encodedUser = jwt.decode(res.body.token, config.common.session.secret);
+        const encodedUser = jwt.verify(res.body.token, config.common.session.secret);
 
         expect(encodedUser.id).to.exist;
         expect(encodedUser.password).be.undefined;
@@ -538,7 +539,7 @@ describe('/users/sessions POST', () => {
 
 describe('/users GET', () => {
   it('should obtain all users, currentPage and totalPages', done => {
-    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const page = 2;
 
     chai
@@ -565,7 +566,7 @@ describe('/users GET', () => {
   });
 
   it('should obtain all users, totalPages and set currentPage to 1 if it is not passed in as query param', done => {
-    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
 
     chai
       .request(server)
@@ -588,7 +589,7 @@ describe('/users GET', () => {
   });
 
   it('should obtain all users, totalPages and set currentPage to the max page if the requested greater than the max', done => {
-    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const page = 10000;
 
     chai
@@ -612,8 +613,30 @@ describe('/users GET', () => {
       .catch(err => done(err));
   });
 
+  it('should fail if the token is expired', done => {
+    const expiredToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret, {
+      expiresIn: '0s'
+    });
+    const page = 2;
+
+    chai
+      .request(server)
+      .get('/users')
+      .set(config.common.session.header_name, expiredToken)
+      .query({ page })
+      .catch(err => {
+        const res = err.response;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+
+        expect(res.body).to.equal('Invalid authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
   it('should fail if the token does not contain valid id and email combination', done => {
-    const invalidToken = jwt.encode({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const invalidToken = jwt.sign({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const page = 2;
 
     chai
@@ -633,7 +656,7 @@ describe('/users GET', () => {
   });
 
   it('should fail if the token does not contain an email without calling the database', done => {
-    const invalidToken = jwt.encode({ id: 1 }, config.common.session.secret);
+    const invalidToken = jwt.sign({ id: 1 }, config.common.session.secret);
     const page = 2;
 
     chai
@@ -653,7 +676,7 @@ describe('/users GET', () => {
   });
 
   it('should fail if the token does not contain an id without calling the database', done => {
-    const invalidToken = jwt.encode({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const invalidToken = jwt.sign({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const page = 2;
 
     chai
@@ -693,7 +716,7 @@ describe('/users GET', () => {
   });
 
   it('should fail if the token is not in the correct header key', done => {
-    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const page = 2;
 
     chai
@@ -734,10 +757,7 @@ describe('/users GET', () => {
 describe('/users/:id/albums GET', () => {
   it("should obtain all user's albums when the logged user is the same as requested", done => {
     const userId = 2;
-    const validToken = jwt.encode(
-      { id: userId, email: 'jane.doe@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: userId, email: 'jane.doe@wolox.com.ar' }, config.common.session.secret);
 
     chai
       .request(server)
@@ -758,10 +778,7 @@ describe('/users/:id/albums GET', () => {
 
   it("should obtain all user's albums when the logged user is admin", done => {
     const userId = 2;
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     chai
       .request(server)
@@ -781,7 +798,7 @@ describe('/users/:id/albums GET', () => {
 
   it('should fail when the logged user is the same as requested and it is not admin', done => {
     const userId = 1;
-    const validToken = jwt.encode({ id: 2, email: 'jane.doe@wolox.com.ar' }, config.common.session.secret);
+    const validToken = jwt.sign({ id: 2, email: 'jane.doe@wolox.com.ar' }, config.common.session.secret);
 
     chai
       .request(server)
@@ -798,8 +815,29 @@ describe('/users/:id/albums GET', () => {
       .catch(err => done(err));
   });
 
+  it('should fail if the token is expired', done => {
+    const expiredToken = jwt.sign({ id: 2, email: 'jane.doe@wolox.cl' }, config.common.session.secret, {
+      expiresIn: '0s'
+    });
+    const userId = 1;
+
+    chai
+      .request(server)
+      .get(`/users/${userId}/albums`)
+      .set(config.common.session.header_name, expiredToken)
+      .catch(err => {
+        const res = err.response;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+
+        expect(res.body).to.equal('Invalid authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
   it('should fail if the token does not contain valid id and email combination', done => {
-    const invalidToken = jwt.encode({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const invalidToken = jwt.sign({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const userId = 1;
 
     chai
@@ -818,7 +856,7 @@ describe('/users/:id/albums GET', () => {
   });
 
   it('should fail if the token does not contain an email without calling the database', done => {
-    const invalidToken = jwt.encode({ id: 1 }, config.common.session.secret);
+    const invalidToken = jwt.sign({ id: 1 }, config.common.session.secret);
     const userId = 1;
 
     chai
@@ -837,7 +875,7 @@ describe('/users/:id/albums GET', () => {
   });
 
   it('should fail if the token does not contain an id without calling the database', done => {
-    const invalidToken = jwt.encode({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const invalidToken = jwt.sign({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const userId = 1;
 
     chai
@@ -875,7 +913,7 @@ describe('/users/:id/albums GET', () => {
   });
 
   it('should fail if the token is not in the correct header key', done => {
-    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const userId = 1;
 
     chai
@@ -915,10 +953,7 @@ describe('/users/:id/albums GET', () => {
 describe('/users/albums/:id/photos GET', () => {
   it("should obtain all user's albums photos when the logged user is the same as requested", done => {
     const userId = 2;
-    const validToken = jwt.encode(
-      { id: userId, email: 'jane.doe@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: userId, email: 'jane.doe@wolox.com.ar' }, config.common.session.secret);
 
     const firstMockResponse = [
       {
@@ -981,10 +1016,7 @@ describe('/users/albums/:id/photos GET', () => {
 
   it('should fail when the logged user is the same as requested and it is not admin', done => {
     const userId = 2;
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     chai
       .request(server)
@@ -1003,7 +1035,7 @@ describe('/users/albums/:id/photos GET', () => {
 
   it('should fail when the logged user is the same as requested and it is not admin', done => {
     const userId = 1;
-    const validToken = jwt.encode({ id: 2, email: 'jane.doe@wolox.com.ar' }, config.common.session.secret);
+    const validToken = jwt.sign({ id: 2, email: 'jane.doe@wolox.com.ar' }, config.common.session.secret);
 
     chai
       .request(server)
@@ -1020,8 +1052,29 @@ describe('/users/albums/:id/photos GET', () => {
       .catch(err => done(err));
   });
 
+  it('should fail if the token is expired', done => {
+    const expiredToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret, {
+      expiresIn: '0s'
+    });
+    const userId = 1;
+
+    chai
+      .request(server)
+      .get(`/users/albums/${userId}/photos`)
+      .set(config.common.session.header_name, expiredToken)
+      .catch(err => {
+        const res = err.response;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+
+        expect(res.body).to.equal('Invalid authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
   it('should fail if the token does not contain valid id and email combination', done => {
-    const invalidToken = jwt.encode({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const invalidToken = jwt.sign({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const userId = 1;
 
     chai
@@ -1040,7 +1093,7 @@ describe('/users/albums/:id/photos GET', () => {
   });
 
   it('should fail if the token does not contain an email without calling the database', done => {
-    const invalidToken = jwt.encode({ id: 1 }, config.common.session.secret);
+    const invalidToken = jwt.sign({ id: 1 }, config.common.session.secret);
     const userId = 1;
 
     chai
@@ -1059,7 +1112,7 @@ describe('/users/albums/:id/photos GET', () => {
   });
 
   it('should fail if the token does not contain an id without calling the database', done => {
-    const invalidToken = jwt.encode({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const invalidToken = jwt.sign({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const userId = 1;
 
     chai
@@ -1097,7 +1150,7 @@ describe('/users/albums/:id/photos GET', () => {
   });
 
   it('should fail if the token is not in the correct header key', done => {
-    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const userId = 1;
 
     chai
@@ -1136,10 +1189,7 @@ describe('/users/albums/:id/photos GET', () => {
 
 describe('/users/admin POST', () => {
   it('should save the new user in the database with role "admin" when requester is admin', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const validUser = {
       firstName: 'John',
@@ -1165,10 +1215,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should update the user if it is already registered and update only the role', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const validUserId = 1;
     const validUser = {
@@ -1204,10 +1251,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail when the first name is undefined', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const invalidUser = {
       lastName: 'Doe',
@@ -1233,10 +1277,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail when the first name is null', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const invalidUser = {
       firstName: null,
@@ -1263,10 +1304,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail when the last name is undefined', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const invalidUser = {
       firstName: 'John',
@@ -1292,10 +1330,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail when the last name is null', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const invalidUser = {
       firstName: 'John',
@@ -1322,10 +1357,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail when the email is undefined', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const invalidUser = {
       firstName: 'John',
@@ -1352,10 +1384,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail when the email is null', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const invalidUser = {
       firstName: 'John',
@@ -1383,10 +1412,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail when the email is not from wolox domain', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const invalidUser = {
       firstName: 'John',
@@ -1413,10 +1439,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail when the email is not well formed', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const invalidUser = {
       firstName: 'John',
@@ -1443,10 +1466,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail when the password is undefined', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const invalidUser = {
       firstName: 'John',
@@ -1473,10 +1493,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail when the password is null', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const invalidUser = {
       firstName: 'John',
@@ -1504,10 +1521,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail when the password contains less than 8 chars', done => {
-    const validToken = jwt.encode(
-      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
-      config.common.session.secret
-    );
+    const validToken = jwt.sign({ id: 3, email: 'noctis.lucis@wolox.com.ar' }, config.common.session.secret);
 
     const invalidUser = {
       firstName: 'John',
@@ -1534,7 +1548,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail if the token does not contain an admin user encoded', done => {
-    const invalidToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const invalidToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const validUser = {
       firstName: 'John',
       lastName: 'Doe',
@@ -1558,8 +1572,35 @@ describe('/users/admin POST', () => {
       .catch(err => done(err));
   });
 
+  it('should fail if the token is expired', done => {
+    const expiredToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret, {
+      expiresIn: '0s'
+    });
+    const validUser = {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@wolox.com.ar',
+      password: '12345678'
+    };
+
+    chai
+      .request(server)
+      .post('/users/admin')
+      .set(config.common.session.header_name, expiredToken)
+      .send(validUser)
+      .catch(err => {
+        const res = err.response;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+
+        expect(res.body).to.equal('Invalid authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
   it('should fail if the token does not contain valid id and email combination', done => {
-    const invalidToken = jwt.encode({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const invalidToken = jwt.sign({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const validUser = {
       firstName: 'John',
       lastName: 'Doe',
@@ -1584,7 +1625,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail if the token does not contain an email without calling the database', done => {
-    const invalidToken = jwt.encode({ id: 1 }, config.common.session.secret);
+    const invalidToken = jwt.sign({ id: 1 }, config.common.session.secret);
     const validUser = {
       firstName: 'John',
       lastName: 'Doe',
@@ -1609,7 +1650,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail if the token does not contain an id without calling the database', done => {
-    const invalidToken = jwt.encode({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const invalidToken = jwt.sign({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const validUser = {
       firstName: 'John',
       lastName: 'Doe',
@@ -1659,7 +1700,7 @@ describe('/users/admin POST', () => {
   });
 
   it('should fail if the token is not in the correct header key', done => {
-    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
     const validUser = {
       firstName: 'John',
       lastName: 'Doe',
