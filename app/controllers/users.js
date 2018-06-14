@@ -4,7 +4,11 @@ const { users } = require('../models'),
   config = require('../../config'),
   to = require('../helper/to'),
   { ADMIN, REGULAR } = require('../roles'),
-  logger = require('../logger');
+  logger = require('../logger'),
+  _logDatabaseError = response => err => {
+    logger.error('There was an error accessing the database', err);
+    response.status(503).json('There was an error, please try again later');
+  };
 
 const save = async (request, response) => {
   const user = Object.assign(request.body, { role: REGULAR });
@@ -57,10 +61,7 @@ const login = (request, response) =>
         response.status(401).json('The user does not exist');
       }
     })
-    .catch(err => {
-      logger.error('There was an error accessing the database', err);
-      response.status(503).json('There was an error, please try again later');
-    });
+    .catch(_logDatabaseError(response));
 
 const findAll = (request, response) =>
   users
@@ -82,9 +83,13 @@ const findAll = (request, response) =>
           response.json({ result, currentPage, pages });
         });
     })
-    .catch(err => {
-      logger.error('There was an error accessing the database', err);
-      response.status(503).json('There was an error, please try again later');
-    });
+    .catch(_logDatabaseError(response));
 
-module.exports = { save, login, findAll, saveOrUpdateAdmin };
+const findUserAlbums = (request, response) =>
+  users
+    .findById(request.params.user_id)
+    .then(user => user.getAlbums())
+    .then(albums => response.send(albums))
+    .catch(_logDatabaseError(response));
+
+module.exports = { save, login, findAll, saveOrUpdateAdmin, findUserAlbums };
