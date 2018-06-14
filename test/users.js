@@ -730,6 +730,186 @@ describe('/users GET', () => {
   });
 });
 
+describe('/users/:user_id/albums GET', () => {
+  it("should obtain all user's albums when the logged user is the same as requested", done => {
+    const userId = 2;
+    const validToken = jwt.encode(
+      { id: userId, email: 'jane.doe@wolox.com.ar' },
+      config.common.session.secret
+    );
+
+    chai
+      .request(server)
+      .get(`/users/${userId}/albums`)
+      .set(config.common.session.header_name, validToken)
+      .then(res => {
+        expect(res.status).to.equal(200);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0].id).to.equal(1);
+
+        dictum.chai(res, "Find all user's albums");
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it("should obtain all user's albums when the logged user is admin", done => {
+    const userId = 2;
+    const validToken = jwt.encode(
+      { id: 3, email: 'noctis.lucis@wolox.com.ar' },
+      config.common.session.secret
+    );
+
+    chai
+      .request(server)
+      .get(`/users/${userId}/albums`)
+      .set(config.common.session.header_name, validToken)
+      .then(res => {
+        expect(res.status).to.equal(200);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+        expect(res.body.length).to.equal(1);
+        expect(res.body[0].id).to.equal(1);
+
+        dictum.chai(res, "Find all user's albums");
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail when the logged user is the same as requested and it is not admin', done => {
+    const userId = 1;
+    const validToken = jwt.encode({ id: 2, email: 'jane.doe@wolox.com.ar' }, config.common.session.secret);
+
+    chai
+      .request(server)
+      .get(`/users/${userId}/albums`)
+      .set(config.common.session.header_name, validToken)
+      .catch(err => {
+        const res = err.response;
+        expect(res.status).to.equal(403);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+        expect(res.body).to.equal('You do not have permission to access this resource');
+
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if the token does not contain valid id and email combination', done => {
+    const invalidToken = jwt.encode({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const userId = 1;
+
+    chai
+      .request(server)
+      .get(`/users/${userId}/albums`)
+      .set(config.common.session.header_name, invalidToken)
+      .catch(err => {
+        const res = err.response;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+
+        expect(res.body).to.equal('Invalid authorization token data');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if the token does not contain an email without calling the database', done => {
+    const invalidToken = jwt.encode({ id: 1 }, config.common.session.secret);
+    const userId = 1;
+
+    chai
+      .request(server)
+      .get(`/users/${userId}/albums`)
+      .set(config.common.session.header_name, invalidToken)
+      .catch(err => {
+        const res = err.response;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+
+        expect(res.body).to.equal('Invalid authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if the token does not contain an id without calling the database', done => {
+    const invalidToken = jwt.encode({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const userId = 1;
+
+    chai
+      .request(server)
+      .get(`/users/${userId}/albums`)
+      .set(config.common.session.header_name, invalidToken)
+      .catch(err => {
+        const res = err.response;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+
+        expect(res.body).to.equal('Invalid authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if the token is invalid', done => {
+    const invalidToken = 'blahblah';
+    const userId = 1;
+
+    chai
+      .request(server)
+      .get(`/users/${userId}/albums`)
+      .set(config.common.session.header_name, invalidToken)
+      .catch(err => {
+        const res = err.response;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+
+        expect(res.body).to.equal('Invalid authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if the token is not in the correct header key', done => {
+    const validToken = jwt.encode({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const userId = 1;
+
+    chai
+      .request(server)
+      .get(`/users/${userId}/albums`)
+      .set('x-access-token', validToken)
+      .catch(err => {
+        const res = err.response;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+
+        expect(res.body).to.equal('Missing authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+
+  it('should fail if there is no token in the header', done => {
+    const userId = 1;
+
+    chai
+      .request(server)
+      .get(`/users/${userId}/albums`)
+
+      .catch(err => {
+        const res = err.response;
+        expect(res.status).to.equal(401);
+        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
+
+        expect(res.body).to.equal('Missing authorization token');
+        done();
+      })
+      .catch(err => done(err));
+  });
+});
+
 describe('/users/admin POST', () => {
   it('should save the new user in the database with role "admin" when requester is admin', done => {
     const validToken = jwt.encode(
