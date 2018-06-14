@@ -25,7 +25,7 @@ const { users, albums, sequelize } = require('../app/models'),
     role: 'admin'
   },
   createRelationship = (userId, albumId) => () =>
-    sequelize.query(`INSERT INTO users_albums VALUES (5, ${userId}, ${albumId}, now(), now())`);
+    users.findById(userId).then(user => albums.findById(albumId).then(album => user.addAlbum(album)));
 
 const wrap = (fn, ...args) => () => fn(...args);
 
