@@ -5,6 +5,10 @@ const { users, albums, sequelize } = require('../app/models'),
     id: 1,
     title: 'Lorem ipsum'
   },
+  secondAlbum = {
+    id: 2,
+    title: 'dolor sit amet'
+  },
   firstUser = {
     email: 'jane.doe@wolox.cl',
     password: '$2a$10$Rtxlqx205LNuguX2htEK2./zuVhdtRRGJMgzPFntc3biK3/7C2rUC', // 12345678
@@ -35,5 +39,7 @@ exports.execute = () =>
     wrap(userCreate, secondUser),
     wrap(userCreate, thirdUser),
     wrap(albumCreate, firstAlbum),
-    createRelationship(2, 1)
+    wrap(albumCreate, secondAlbum),
+    createRelationship(2, 1),
+    createRelationship(2, 2)
   ].reduce((p, fn) => p.then(fn), Promise.resolve());

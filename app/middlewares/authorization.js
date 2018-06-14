@@ -40,9 +40,16 @@ const isAdmin = (request, response, next) => {
 
 const isAdminOrLoggedUser = (request, response, next) => {
   const loggedUser = response.locals.loggedUser;
-  if (parseInt(request.params.user_id) !== loggedUser.id && loggedUser.role !== ADMIN)
+  if (parseInt(request.params.id) !== loggedUser.id && loggedUser.role !== ADMIN)
     return response.status(403).json('You do not have permission to access this resource');
   next();
 };
 
-module.exports = { loggedIn, isAdmin, isAdminOrLoggedUser };
+const isLoggedUser = (request, response, next) => {
+  const loggedUser = response.locals.loggedUser;
+  if (parseInt(request.params.id) !== loggedUser.id)
+    return response.status(403).json('You do not have permission to access this resource');
+  next();
+};
+
+module.exports = { loggedIn, isAdmin, isAdminOrLoggedUser, isLoggedUser };

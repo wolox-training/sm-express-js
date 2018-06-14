@@ -236,7 +236,7 @@ describe('/albums/:id POST', () => {
         return albums.findAndCountAll();
       })
       .then(data => {
-        expect(data.count).to.equal(1);
+        expect(data.count).to.equal(2);
         done();
       })
       .catch(err => done(err));
