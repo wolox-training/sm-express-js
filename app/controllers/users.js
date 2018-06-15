@@ -2,9 +2,11 @@ const { users } = require('../models'),
   bcrypt = require('bcryptjs'),
   jwt = require('jwt-simple'),
   config = require('../../config'),
+  axios = require('axios'),
   to = require('../helper/to'),
   { ADMIN, REGULAR } = require('../roles'),
   logger = require('../logger'),
+  photoEndpoint = `${config.common.api.photosEndpointHost}${config.common.api.photosEndpointRoute}`,
   _logDatabaseError = response => err => {
     logger.error('There was an error accessing the database', err);
     response.status(503).json('There was an error, please try again later');
@@ -87,9 +89,21 @@ const findAll = (request, response) =>
 
 const findUserAlbums = (request, response) =>
   users
-    .findById(request.params.user_id)
+    .findById(request.params.id)
     .then(user => user.getAlbums())
     .then(albums => response.send(albums))
     .catch(_logDatabaseError(response));
 
-module.exports = { save, login, findAll, saveOrUpdateAdmin, findUserAlbums };
+const findUserAlbumsPhotos = (request, response) =>
+  users
+    .findById(request.params.id)
+    .then(user => user.getAlbums())
+    .then(albums =>
+      Promise.all(
+        Array.prototype.map.call(albums, album => axios.get(`${photoEndpoint}?albumId=${album.id}`))
+      )
+    )
+    .then(photosMatrix => response.send([].concat(...photosMatrix.map(res => res.data))))
+    .catch(_logDatabaseError(response));
+
+module.exports = { save, login, findAll, saveOrUpdateAdmin, findUserAlbums, findUserAlbumsPhotos };

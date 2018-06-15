@@ -42,7 +42,9 @@ const config = {
       parameterLimit: process.env.API_PARAMETER_LIMIT,
       pageLimit: process.env.API_PAGE_LIMIT,
       albumsEndpointHost: process.env.API_ALBUMS_ENDPOINT_HOST,
-      albumsEndpointRoute: process.env.API_ALBUMS_ENDPOINT_ROUTE
+      albumsEndpointRoute: process.env.API_ALBUMS_ENDPOINT_ROUTE,
+      photosEndpointHost: process.env.API_PHOTOS_ENDPOINT_HOST,
+      photosEndpointRoute: process.env.API_PHOTOS_ENDPOINT_ROUTE
     },
     session: {
       header_name: 'authorization',
