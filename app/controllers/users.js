@@ -1,4 +1,4 @@
-const { users } = require('../models'),
+const { users, sessions } = require('../models'),
   bcrypt = require('bcryptjs'),
   jwt = require('jsonwebtoken'),
   config = require('../../config'),
@@ -6,6 +6,7 @@ const { users } = require('../models'),
   to = require('../helper/to'),
   { ADMIN, REGULAR } = require('../roles'),
   logger = require('../logger'),
+  expiresIn = config.common.session.expireTime,
   photoEndpoint = `${config.common.api.photosEndpointHost}${config.common.api.photosEndpointRoute}`,
   _logDatabaseError = response => err => {
     logger.error('There was an error accessing the database', err);
@@ -50,22 +51,19 @@ const login = (request, response) =>
   users
     .findOne({ where: { email: request.body.email } })
     .then(async user => {
-      if (user) {
-        const match = await bcrypt.compare(request.body.password, user.password);
-        if (match) {
-          const userData = user.dataValues;
-          delete userData.password;
-          const expiresIn = config.common.session.expireTime;
-          response.send({
-            token: jwt.sign(userData, config.common.session.secret, { expiresIn }),
-            expiresIn
-          });
-        } else {
-          response.status(401).json('The password does not match');
-        }
-      } else {
-        response.status(401).json('The user does not exist');
-      }
+      if (!user) return response.status(401).json('The user does not exist');
+
+      const match = await bcrypt.compare(request.body.password, user.password);
+      if (!match) return response.status(401).json('The password does not match');
+
+      const userData = user.dataValues;
+      delete userData.password;
+      const token = {
+        token: jwt.sign(userData, config.common.session.secret, { expiresIn }),
+        expiresIn
+      };
+      await sessions.create(Object.assign({}, token, { userId: user.id }));
+      response.send(token);
     })
     .catch(_logDatabaseError(response));
 
@@ -103,9 +101,7 @@ const findUserAlbumsPhotos = (request, response) =>
     .findById(request.params.id)
     .then(user => user.getAlbums())
     .then(albums =>
-      Promise.all(
-        Array.prototype.map.call(albums, album => axios.get(`${photoEndpoint}?albumId=${album.id}`))
-      )
+      Promise.all(Array.from(albums, album => axios.get(`${photoEndpoint}?albumId=${album.id}`)))
     )
     .then(photosMatrix => response.send([].concat(...photosMatrix.map(res => res.data))))
     .catch(_logDatabaseError(response));

@@ -6,6 +6,7 @@ const {
     findUserAlbums,
     findUserAlbumsPhotos
   } = require('./controllers/users'),
+  { deleteByUserId } = require('./controllers/sessions'),
   { getAllAlbums, buyAlbum } = require('./controllers/albums'),
   { loggedIn, isAdmin, isAdminOrLoggedUser, isLoggedUser } = require('./middlewares/authorization'),
   userValidator = require('./middlewares/userValidator'),
@@ -21,4 +22,5 @@ exports.init = app => {
   app.get('/users/albums/:id/photos', [loggedIn, isLoggedUser], findUserAlbumsPhotos);
   app.post('/users/admin', [userValidator, loggedIn, isAdmin, passwordEncrypt], saveOrUpdateAdmin);
   app.post('/users/sessions', [loginValidator], login);
+  app.post('/users/sessions/invalidate_all', [loggedIn], deleteByUserId);
 };
