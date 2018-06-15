@@ -1,3 +1,3 @@
-const jwt = require('jwt-simple');
+const jwt = require('jsonwebtoken');
 
-module.exports = async (...args) => jwt.decode(...args);
+module.exports = async (...args) => jwt.verify(...args);
