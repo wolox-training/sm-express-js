@@ -1,0 +1,8 @@
+module.exports = {
+  tokenUserIdOne:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqYW5lLmRvZUB3b2xveC5jbCIsImlhdCI6MTUyOTA4MjIzNX0.eOBB1BQtLi4rRnFp29r4FClVoB4NirwsAPVvgBkZjFQ',
+  tokenUserIdTwo:
+    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZW1haWwiOiJqYW5lLmRvZUB3b2xveC5jbCJ9.D4R0mjFatw7HNH6ur8GyUlupV6qfNS8Czu_2Ka7RKM8',
+  tokenUserIdThree:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJub2N0aXMubHVjaXNAd29sb3guY29tLmFyIiwiaWF0IjoxNTI5MDg0MDQ2fQ.ld-WWXVn30UzsLN6nddnpcJzsE93NoxI_mGtsyiswms'
+};
