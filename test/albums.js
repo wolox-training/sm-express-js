@@ -4,6 +4,7 @@ const chai = require('chai'),
   config = require('../config'),
   jwt = require('jsonwebtoken'),
   { users, albums } = require('../app/models'),
+  { tokenUserIdOne } = require('./testConstants'),
   nock = require('nock'),
   expect = require('chai').expect;
 
@@ -25,7 +26,7 @@ describe('/albums GET', () => {
       .get(config.common.api.albumsEndpointRoute)
       .reply(200, mockResponse);
 
-    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = tokenUserIdOne;
 
     chai
       .request(server)
@@ -48,7 +49,7 @@ describe('/albums GET', () => {
       .get(config.common.api.albumsEndpointRoute)
       .reply(503, mockError);
 
-    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = tokenUserIdOne;
 
     chai
       .request(server)
@@ -85,60 +86,6 @@ describe('/albums GET', () => {
       .catch(err => done(err));
   });
 
-  it('should fail if the token does not contain valid id and email combination', done => {
-    const invalidToken = jwt.sign({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
-
-    chai
-      .request(server)
-      .get('/albums')
-      .set(config.common.session.header_name, invalidToken)
-      .catch(err => {
-        const res = err.response;
-        expect(res.status).to.equal(401);
-        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
-
-        expect(res.body).to.equal('Invalid authorization token data');
-        done();
-      })
-      .catch(err => done(err));
-  });
-
-  it('should fail if the token does not contain an email without calling the database', done => {
-    const invalidToken = jwt.sign({ id: 1 }, config.common.session.secret);
-
-    chai
-      .request(server)
-      .get('/albums')
-      .set(config.common.session.header_name, invalidToken)
-      .catch(err => {
-        const res = err.response;
-        expect(res.status).to.equal(401);
-        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
-
-        expect(res.body).to.equal('Invalid authorization token');
-        done();
-      })
-      .catch(err => done(err));
-  });
-
-  it('should fail if the token does not contain an id without calling the database', done => {
-    const invalidToken = jwt.sign({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
-
-    chai
-      .request(server)
-      .get('/albums')
-      .set(config.common.session.header_name, invalidToken)
-      .catch(err => {
-        const res = err.response;
-        expect(res.status).to.equal(401);
-        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
-
-        expect(res.body).to.equal('Invalid authorization token');
-        done();
-      })
-      .catch(err => done(err));
-  });
-
   it('should fail if the token is invalid', done => {
     const invalidToken = 'blahblah';
 
@@ -158,7 +105,7 @@ describe('/albums GET', () => {
   });
 
   it('should fail if the token is not in the correct header key', done => {
-    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = tokenUserIdOne;
 
     chai
       .request(server)
@@ -203,7 +150,7 @@ describe('/albums/:id POST', () => {
       .get(`${config.common.api.albumsEndpointRoute}/${desiredId}`)
       .reply(200, mockResponse);
 
-    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = tokenUserIdOne;
 
     chai
       .request(server)
@@ -243,7 +190,7 @@ describe('/albums/:id POST', () => {
       .get(`${config.common.api.albumsEndpointRoute}/${desiredId}`)
       .reply(200, mockResponse);
 
-    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = tokenUserIdOne;
 
     chai
       .request(server)
@@ -273,7 +220,7 @@ describe('/albums/:id POST', () => {
       .get(`${config.common.api.albumsEndpointRoute}/${desiredId}`)
       .reply(200, mockResponse);
 
-    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = tokenUserIdOne;
 
     chai
       .request(server)
@@ -305,7 +252,7 @@ describe('/albums/:id POST', () => {
       .get(`${config.common.api.albumsEndpointRoute}/${desiredId}`)
       .reply(200, mockResponse);
 
-    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = tokenUserIdOne;
 
     chai
       .request(server)
@@ -342,60 +289,6 @@ describe('/albums/:id POST', () => {
       .catch(err => done(err));
   });
 
-  it('should fail if the token does not contain valid id and email combination', done => {
-    const invalidToken = jwt.sign({ id: 3, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
-
-    chai
-      .request(server)
-      .post('/albums/1')
-      .set(config.common.session.header_name, invalidToken)
-      .catch(err => {
-        const res = err.response;
-        expect(res.status).to.equal(401);
-        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
-
-        expect(res.body).to.equal('Invalid authorization token data');
-        done();
-      })
-      .catch(err => done(err));
-  });
-
-  it('should fail if the token does not contain an email without calling the database', done => {
-    const invalidToken = jwt.sign({ id: 1 }, config.common.session.secret);
-
-    chai
-      .request(server)
-      .post('/albums/1')
-      .set(config.common.session.header_name, invalidToken)
-      .catch(err => {
-        const res = err.response;
-        expect(res.status).to.equal(401);
-        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
-
-        expect(res.body).to.equal('Invalid authorization token');
-        done();
-      })
-      .catch(err => done(err));
-  });
-
-  it('should fail if the token does not contain an id without calling the database', done => {
-    const invalidToken = jwt.sign({ email: 'jane.doe@wolox.cl' }, config.common.session.secret);
-
-    chai
-      .request(server)
-      .post('/albums/1')
-      .set(config.common.session.header_name, invalidToken)
-      .catch(err => {
-        const res = err.response;
-        expect(res.status).to.equal(401);
-        expect(res.header['content-type']).to.equal('application/json; charset=utf-8');
-
-        expect(res.body).to.equal('Invalid authorization token');
-        done();
-      })
-      .catch(err => done(err));
-  });
-
   it('should fail if the token is invalid', done => {
     const invalidToken = 'blahblah';
 
@@ -415,7 +308,7 @@ describe('/albums/:id POST', () => {
   });
 
   it('should fail if the token is not in the correct header key', done => {
-    const validToken = jwt.sign({ id: 1, email: 'jane.doe@wolox.cl' }, config.common.session.secret);
+    const validToken = tokenUserIdOne;
 
     chai
       .request(server)
