@@ -3,13 +3,15 @@ const chai = require('chai'),
   server = require('./../app'),
   config = require('../config'),
   { users, albums, sequelize } = require('../app/models'),
+  { registrationHtml } = require('../app/helper/htmlMessages'),
   jwt = require('jsonwebtoken'),
   { tokenUserIdOne, tokenUserIdTwo, tokenUserIdThree } = require('./testConstants'),
   nock = require('nock'),
+  ms = require('smtp-tester'),
   expect = require('chai').expect;
 
 describe('/users POST', () => {
-  it('should save the new user in the database with role "regular" when it is valid', done => {
+  it('should save the new user in the database with role "regular" when it is valid and send an email', done => {
     const validUser = {
       firstName: 'John',
       lastName: 'Doe',
@@ -17,6 +19,7 @@ describe('/users POST', () => {
       password: '12345678',
       role: 'admin'
     };
+    const mailPromise = ms.init(config.common.email.port).captureOne('john.doe@wolox.cl', { wait: 3000 });
     chai
       .request(server)
       .post('/users')
@@ -29,7 +32,11 @@ describe('/users POST', () => {
         expect(res.body.role).to.equal('regular');
 
         dictum.chai(res, 'The saved user without password but with the generated ID');
-        done();
+        return mailPromise.then(({ address, id, email }) => {
+          expect(email.sender).to.equal(config.common.email.sender.email);
+          expect(email.html).to.equal(registrationHtml(validUser));
+          done();
+        });
       })
       .catch(err => done(err));
   });

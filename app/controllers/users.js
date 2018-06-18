@@ -5,6 +5,8 @@ const { users, sessions } = require('../models'),
   axios = require('axios'),
   to = require('../helper/to'),
   { ADMIN, REGULAR } = require('../roles'),
+  transport = require('nodemailer').createTransport(config.common.email),
+  { registrationHtml } = require('../helper/htmlMessages'),
   logger = require('../logger'),
   expiresIn = config.common.session.expireTime,
   photoEndpoint = `${config.common.api.photosEndpointHost}${config.common.api.photosEndpointRoute}`,
@@ -25,6 +27,17 @@ const save = async (request, response) => {
 
   const userData = newUser.dataValues;
   delete userData.password;
+  transport.sendMail(
+    {
+      from: `${config.common.email.sender.name} <${config.common.email.sender.email}>`,
+      to: userData.email,
+      subject: 'Registration Success',
+      html: registrationHtml(userData)
+    },
+    err => {
+      if (err) logger.error(err);
+    }
+  );
 
   logger.info(`The user ${userData.firstName} has been created`);
   response.status(201).send(userData);
