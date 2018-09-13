@@ -5,6 +5,7 @@ const { users, sessions } = require('../models'),
   axios = require('axios'),
   to = require('../helper/to'),
   { ADMIN, REGULAR } = require('../roles'),
+  { sendConfirmationEmail } = require('../services/mailSender'),
   logger = require('../logger'),
   expiresIn = config.common.session.expireTime,
   photoEndpoint = `${config.common.api.photosEndpointHost}${config.common.api.photosEndpointRoute}`,
@@ -25,6 +26,7 @@ const save = async (request, response) => {
 
   const userData = newUser.dataValues;
   delete userData.password;
+  sendConfirmationEmail(userData);
 
   logger.info(`The user ${userData.firstName} has been created`);
   response.status(201).send(userData);

@@ -55,9 +55,23 @@ const config = {
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
       environment: process.env.ROLLBAR_ENV
     },
+    email: {
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD
+      },
+      sender: {
+        email: process.env.EMAIL_SENDER_EMAIL,
+        name: process.env.EMAIL_SENDER_NAME
+      }
+    },
     port: process.env.PORT
   }
 };
+
+if (!process.env.EMAIL_USERNAME || !process.env.EMAIL_PASSWORD) delete config.common.email.auth;
 
 const customConfig = require(configFile).config;
 module.exports = assignObject(customConfig, config);
